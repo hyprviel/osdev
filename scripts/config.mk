@@ -5,7 +5,7 @@ AS      := gcc
 ASFLAGS := -m$(BITS) -ffreestanding
 
 CXX      := g++
-CXXFLAGS := -m$(BITS) -ffreestanding -O2 -Wall -Iinclude
+CXXFLAGS := -m$(BITS) -ffreestanding -fno-stack-protector -O2 -Wall -Wextra -Iinclude
 
 LD      := gcc
-LDFLAGS := -m$(BITS) -nostdlib -no-pie -T scripts/linker.ld
+LDFLAGS := -m$(BITS) -nostdlib -T scripts/linker.ld

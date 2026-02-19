@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lib/stdint.h>
+#include <stdint.h>
 
 extern int vga_cursor_x;
 extern int vga_cursor_y;
