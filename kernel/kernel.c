@@ -1,5 +1,6 @@
-#include <vga.h>
+#include <hw/vga.h>
 
 void kernel_main() {
-    print(mk_attr(BLACK, WHITE), "hello world!");
+    vga_init();
+    vga_print(vga_mkattr(VGA_COLOR_BLACK, VGA_COLOR_WHITE), "hello world!");
 }

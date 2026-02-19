@@ -1,44 +1,37 @@
-#include <vga.h>
+#include <hw/vga.h>
 
-int cursor_x;
-int cursor_y;
+int vga_cursor_x;
+int vga_cursor_y;
 
-void putc(uint8_t attr, char ch, int x, int y) {
+void vga_putc(uint8_t attr, char ch, int x, int y) {
      volatile uint16_t *addr = VGA_ADDR + (y * VGA_WIDTH + x);
      *addr = (attr << 8) | ch;
 }
 
-/**
- * @param attr: color attributes (refer to the wiki - https://wiki.osdev.org/Text_UI#Colours)
- * @param str: the message you wanna display
- */
-void _print(uint8_t attr, char *str) {
-    volatile uint16_t *vga = VGA_ADDR;
+void vga_init() {
+    for (int i = 0; i < VGA_WIDTH * VGA_HEIGHT; i++) {
+        vga_cursor_x = i % VGA_WIDTH;
+        vga_cursor_y = i / VGA_WIDTH;
 
-    while (*str != '\0') {
-        if (*str == '\n') {
-            cursor_y = cursor_x / VGA_WIDTH;
-            cursor_x = (cursor_y + 1) * VGA_WIDTH;
-        } else {
-            // 0000 1111 0000 0000 uint16_t attr
-            // 0000 0000 0100 0001 uint16_t ch
-            // ------------------- OR
-            // 0000 1111 0100 0001 uint16_t res
-            vga[cursor_x] = (uint16_t)((attr << 8) | *str);
-            cursor_x++;
-        }
-        str++;
+        vga_putc(vga_mkattr(VGA_COLOR_BLACK, VGA_COLOR_BLACK), ' ', vga_cursor_x, vga_cursor_y);
     }
+
+    vga_cursor_x = 0;
+    vga_cursor_y = 0;
 }
 
-void print(uint8_t attr, char *str) {
+/**
+ * @param attr: color attributes
+ * @param str: the message you wanna display
+ */
+void vga_print(uint8_t attr, char *str) {
     while (*str != '\0') {
         if (*str == '\n') {
-            cursor_y++;
-            cursor_x = 0;
+            vga_cursor_y++;
+            vga_cursor_x = 0;
         } else {
-            putc(attr, *str, cursor_x, cursor_y);
-            cursor_x++;
+            vga_putc(attr, *str, vga_cursor_x, vga_cursor_y);
+            vga_cursor_x++;
         }
         str++;
     }
